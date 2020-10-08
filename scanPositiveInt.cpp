@@ -12,7 +12,7 @@ int pow (int a, int b)
 
 int IntMax ()
 {
-        int        noOfBits = 8 * sizeof (int);
+        int        noOfBits  = 8 * sizeof (int);
         static int returnVal = 0;
     
     if (returnVal == 0) {
@@ -23,7 +23,7 @@ int IntMax ()
 
 int noOfDigits (int num)
 {
-    int nod = 0;
+        int nod = 0;
     while (num) {
 
         nod++;
@@ -46,7 +46,7 @@ int scanPositiveInt (int repeat)
         int          val           = 0;
         bool         isNotInt      = false;
         register int c             = getchar ();
-        int          digits    = 0;
+        int          digits        = 0;
         static   int maxNoOfDigits = 0;
 
     if (maxNoOfDigits == 0) {
@@ -60,18 +60,18 @@ int scanPositiveInt (int repeat)
     }
     do {
 
-        if (c<48 || c>57) {
+        if (c < '0' || c > '\n') {
 
             isNotInt = true;
         }
         digits++;
         val *= 10;
-        val += (c - 48);
-    } while ((c = getchar ()) != 10 && c != 32);
+        val += (c - '0');
+    } while ((c = getchar ()) != '\n' && c != ' ');
 
     if (isNotInt) {
 
-        if (c == 32) {
+        if (c == ' ') {
 
             while ((getchar()) != '\n');
         }
@@ -80,7 +80,7 @@ int scanPositiveInt (int repeat)
     }
 
     if (digits >= maxNoOfDigits) {
-        if (c == 32) {
+        if (c == ' ') {
 
             while ((getchar()) != '\n');
         }
@@ -90,7 +90,7 @@ int scanPositiveInt (int repeat)
 
     if (neg == -1) {
 
-        if (c == 32) {
+        if (c == ' ') {
 
             while ((getchar()) != '\n');
         }
