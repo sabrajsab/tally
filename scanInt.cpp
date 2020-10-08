@@ -56,18 +56,18 @@ int scanInt (int repeat)
     }
     do {
 
-        if (c<48 || c>57) {
+        if (c < '0' || c > '9') {
 
             isNotInt = true;
         }
         digits++;
         val *= 10;
         val += (c - 48);
-    } while ((c = getchar ()) != 10 && c != 32);
+    } while ((c = getchar ()) != '\n' && c != ' ');
 
     if (isNotInt) {
 
-        if (c == 32) {
+        if (c == ' ') {
 
             while ((getchar()) != '\n');
         }
@@ -76,7 +76,7 @@ int scanInt (int repeat)
     }
 
     if (digits >= maxNoOfDigits) {
-        if (c == 32) {
+        if (c == ' ') {
 
             while ((getchar()) != '\n');
         }
