@@ -7,7 +7,7 @@ int pow (int a, int b)
     return a * pow (a, b - 1);
 }
 
-int scanFloat (int repeat)
+float scanFloat (int repeat)
 {
     if (repeat >= 5) {
         
