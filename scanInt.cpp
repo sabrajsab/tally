@@ -1,3 +1,5 @@
+//format of input : int a = scanInt (0);
+
 int pow (int a, int b)
 {
     if (b == 0) {
