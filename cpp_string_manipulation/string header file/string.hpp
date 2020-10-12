@@ -18,7 +18,7 @@ class string {
         string operator =       (const char *);
         bool   operator ==      (string);
         void            Display ();
-                       ~string ();
+                       ~string  ();
 };
 
 int sizeOf (const char * str);
