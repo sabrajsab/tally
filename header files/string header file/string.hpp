@@ -20,6 +20,9 @@ class string {
         bool   operator >       (const string &);
         bool   operator ==      (const char *);
         void            Display ();
+		int 		    ToInt ();
+		int 		    Compare (const string & pStr);
+
                        ~string  ();
 };
 
@@ -27,3 +30,4 @@ int sizeOf (const char * str);
 
 #include "string.hxx"
 #endif
+

@@ -175,4 +175,27 @@ string :: ~string ()
     free (vArr);
 }
 
+int string :: ToInt ()
+{
+    int number = 0;
+    for(int i = 0; vArr[i]!='\0'; ++i)
+    {
+        number *= 10;
+        number += vArr[i] - '0';
+    }
+    return number;
+}
+
+int string :: Compare (const string & pStr)
+{
+	if ((* this) > pStr) {
+		
+		return 1;
+	} else if ((* this) == pStr) {
+		
+		return 0;
+	} else return -1;
+}
+
 #endif
+
