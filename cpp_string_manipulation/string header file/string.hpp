@@ -5,18 +5,20 @@
 class string {
 
     private:
-        int           vLen;
-        int           vSize;
-        char        * vArr;
+        int             vLen;
+        int             vSize;
+        char          * vArr;
 
     public:
                         string  ();
                         string  (const char *);
                         string  (const string &);
         int             Size    ();
-        string operator =       (string);
+        string operator =       (const string &);
         string operator =       (const char *);
-        bool   operator ==      (string);
+        bool   operator ==      (const string &);
+        bool   operator >       (const string &);
+        bool   operator ==      (const char *);
         void            Display ();
                        ~string  ();
 };
