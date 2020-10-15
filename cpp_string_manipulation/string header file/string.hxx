@@ -46,7 +46,7 @@ int string :: Size ()
     return vLen;
 }
 
-string string :: operator = (string pStr)
+string string :: operator = (const string & pStr)
 {
     if (vSize >= pStr.vLen) {
 
@@ -107,7 +107,7 @@ string string :: operator = (const char * pStr)
     return * this;
 }
 
-bool string :: operator == (string pStr)
+bool string :: operator == (const string & pStr)
 {
     if (pStr.vLen == vLen) {
 
@@ -125,9 +125,49 @@ bool string :: operator == (string pStr)
     return false;
 }
 
+bool string :: operator == (const char * pStr)
+{
+    if (vLen == (sizeof(pStr) -1)) {
+
+        for (int i = 0; i <= vLen; ++i) {
+
+            if (vArr [i] != pStr [i]) {
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+
+bool string :: operator > (const string & pStr)
+{
+    
+    for (int i = 0; i <= vLen && i <= pStr.vLen; ++i) {
+
+        if (vArr [i] < pStr.vArr [i]) {
+
+            return false;
+        } else if (vArr [i] > pStr.vArr [i]) {
+
+            return true;
+        }
+    }
+    if (vLen > pStr.vLen) {
+
+        return true;
+    }
+
+    return false;
+}
+
 void string :: Display ()
 {
-    printf("\n%s", vArr);
+    printf("%s", vArr);
 }
 
 string :: ~string ()
