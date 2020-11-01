@@ -3,7 +3,9 @@
 
 #include <iostream>
 
-
+/*  return no. of characters including '\0'
+	e.g. for "hello" it returns 6
+*/
 int sizeOf (const char * pStr) {
 
         int i;
@@ -14,8 +16,8 @@ int sizeOf (const char * pStr) {
 string :: string ()
 {
     vLen     = 0;
-    vSize    = 1;
-    vArr     = (char *) malloc (1);
+    vSize    = 10;
+    vArr     = (char *) malloc (sizeof(char) * 10);
     vArr [0] = '\0';
 }
 
@@ -23,6 +25,7 @@ string :: string (const char * pStr)
 {
     vSize = sizeOf (pStr);
     vLen  = vSize - 1;
+    vSize = ((vSize / 10) + 1) * 10;
     vArr  = (char *) malloc (vSize);
     for (int i = 0; i <= vLen; ++i) {
 
@@ -30,10 +33,11 @@ string :: string (const char * pStr)
     }
 }
 
-string :: string (const string & pStr)
+string :: string (string & pStr)
 {
-    vLen  = pStr.vLen;
+    vLen  = pStr.Size();
     vSize = vLen + 1;
+    vSize = ((vSize / 10) + 1) * 10;
     vArr  = (char *) malloc (vSize);
     for (int i = 0; i <= vLen; ++i) {
 
@@ -46,41 +50,17 @@ int string :: Size ()
     return vLen;
 }
 
-string string :: operator = (const string & pStr)
+string & string :: operator = (string & pStr)
 {
-    if (vSize >= pStr.vLen) {
-
-        vLen = pStr.vLen;
-        for (int i = 0; i <= vLen; ++i) {
-
-            vArr [i] = pStr.vArr [i];
-        }
-        return * this;
-    }
-
-    vLen              = pStr.vLen;
-    vSize             = vLen + 1;
-        char * newPtr = (char *) realloc (vArr, vSize);
-
-    if (!newPtr) {
-
-        string newStr;
-        return newStr;
-    }
-
-    vArr = newPtr;
-    for (int i = 0; i <= vLen; ++i) {
-
-        vArr [i] = pStr.vArr [i];
-    }
-    return * this;
+    return (*this) = (char *) pStr;
 }
 
-string string :: operator = (const char * pStr)
+string & string :: operator = (const char * pStr)
 {
-    if (vSize >= sizeOf (pStr)) {
+    int pStr_size = sizeOf (pStr);
+    if (vSize >= pStr_size) {
 
-        vLen = (sizeOf (pStr)) - 1;
+        vLen = (pStr_size) - 1;
         for (int i = 0; i <= vLen; ++i) {
 
             vArr [i] = pStr [i];
@@ -88,26 +68,30 @@ string string :: operator = (const char * pStr)
         return * this;
     }
 
-        vSize     = sizeOf (pStr);
-        vLen      = vSize - 1;
-    char * newPtr = (char *) realloc (vArr, vSize);
+        vSize     = ((pStr_size / 10) + 1) * 10;
+    char * newPtr = (char *) malloc (sizeof (char) * vSize);
 
     if (!newPtr) {
 
-        string newStr;
-        return newStr;
+        return * this;
     }
+    for (int i = 0; i <= vLen; ++i) {
 
+            newPtr [i] = vArr [i];
+        }
+    free (vArr);
     vArr = newPtr;
 
+    vLen = pStr_size - 1;
     for (int i = 0; i <= vLen; ++i) {
 
         vArr [i] = pStr [i];
     }
+
     return * this;
 }
 
-bool string :: operator == (const string & pStr)
+bool string :: operator == (string & pStr)
 {
     if (pStr.vLen == vLen) {
 
@@ -127,7 +111,7 @@ bool string :: operator == (const string & pStr)
 
 bool string :: operator == (const char * pStr)
 {
-    if (vLen == (sizeof(pStr) -1)) {
+    if (vLen == (sizeOf(pStr) -1)) {
 
         for (int i = 0; i <= vLen; ++i) {
 
@@ -143,21 +127,66 @@ bool string :: operator == (const char * pStr)
     return false;
 }
 
-
-bool string :: operator > (const string & pStr)
+bool operator == (const char * pStr, string & pThis)
 {
-    
-    for (int i = 0; i <= vLen && i <= pStr.vLen; ++i) {
+    return (pThis == pStr);
+}
 
-        if (vArr [i] < pStr.vArr [i]) {
+bool string :: operator != (string & pStr)
+{
+    if (pStr.vLen == vLen) {
+
+        for (int i = 0; i <= vLen; ++i) {
+
+            if (vArr [i] != pStr.vArr [i]) {
+
+                return !false;
+            }
+        }
+
+        return !true;
+    }
+
+    return !false;
+}
+
+bool string :: operator != (const char * pStr)
+{
+    if (vLen == (sizeOf(pStr) -1)) {
+
+        for (int i = 0; i <= vLen; ++i) {
+
+            if (vArr [i] != pStr [i]) {
+
+                return !false;
+            }
+        }
+
+        return !true;
+    }
+
+    return !false;
+}
+
+bool operator != (const char * pStr, string & pThis)
+{
+    return !(pThis == pStr);
+}
+
+bool operator > (string & pThis, const char * pStr)
+{
+        int pStr_size = sizeOf(pStr) - 1;
+    for (int i = 0; i < pThis.Size() && i < pStr_size; ++i) {
+
+        if (pThis [i] < pStr [i]) {
 
             return false;
-        } else if (vArr [i] > pStr.vArr [i]) {
+        } else if (pThis [i] > pStr [i]) {
 
             return true;
         }
     }
-    if (vLen > pStr.vLen) {
+    if (pThis.Size() > pStr_size) {
 
         return true;
     }
@@ -165,9 +194,179 @@ bool string :: operator > (const string & pStr)
     return false;
 }
 
+bool operator > (const char * pStr, string & pThis)
+{
+        int pStr_size = sizeOf(pStr) - 1;
+    for (int i = 0; i < pThis.Size() && i < pStr_size; ++i) {
+
+        if (pThis [i] > pStr [i]) {
+
+            return false;
+        } else if (pThis [i] < pStr [i]) {
+
+            return true;
+        }
+    }
+    if (pThis.Size() < pStr_size) {
+
+        return true;
+    }
+
+    return false;
+}
+
+bool string :: operator > (string & pStr)
+{
+        int pStr_size = pStr.Size();
+    for (int i = 0; i < Size() && i < pStr_size; ++i) {
+
+        if (vArr [i] < pStr [i]) {
+
+            return false;
+        } else if (vArr [i] > pStr [i]) {
+
+            return true;
+        }
+    }
+    if (Size() > pStr_size) {
+
+        return true;
+    }
+
+    return false;
+}
+
+bool operator < (string & pThis, const char * pStr)
+{
+    return pStr > pThis;
+}
+
+bool operator < (const char * pStr, string & pThis)
+{
+    return (pThis > pStr);
+}
+
+bool string :: operator < (string & pStr)
+{
+    return (pStr > (*this));
+}
+
+bool operator >= (string & pThis, const char * pStr)
+{
+    return (pStr < pThis);
+}
+
+bool operator >= (const char * pStr, string & pThis)
+{
+    return (pThis < pStr);
+}
+
+bool string :: operator >= (string & pStr)
+{
+    return (pStr < *this);
+}
+
+bool operator <= (string & pThis, const char * pStr)
+{
+    return (pStr > pThis);
+}
+
+bool operator <= (const char * pStr, string & pThis)
+{
+    return (pThis > pStr);
+}
+
+bool string :: operator <= (string & pStr)
+{
+    return (pStr > *this);
+}
+
+string string :: operator + (const char * pStr)
+{
+	int pStr_size = sizeOf (pStr);
+	if (vLen + pStr_size > vSize) {
+		
+		vSize = vLen + pStr_size;
+        vSize = ((vSize / 10) + 1) * 10;
+		char * newPtr = (char *) malloc (sizeof (char) * vSize);
+
+		if (!newPtr) {
+
+			string newStr;
+			return newStr;
+		}
+        for (int i = 0; i <= vLen; ++i) {
+
+            newPtr [i] = vArr [i];
+        }
+        free (vArr);
+        vArr = newPtr;
+	}
+	for (int i = 0; i < pStr_size; ++i) {
+		
+		vArr [vLen + i] = pStr [i];
+	}
+	vLen += (pStr_size - 1);
+	string temp (*this);
+	vLen -= (pStr_size - 1);
+	vArr [vLen] = '\0';
+	return temp;
+}
+
+string operator + (const char * pStr, string & pThis)
+{
+        string temp_str (pStr);
+        temp_str = temp_str + pThis;
+        return temp_str;
+}
+
+string operator + (string & pThis, string & pStr)
+{
+        const char * temp = (char *) pStr;
+	return (pThis + temp);
+}
+
+string :: operator char * ()
+{
+	return vArr;
+}
+
+char & string :: operator [] (int pIndex)
+{
+	return *(vArr + pIndex);
+}
+
+string & string :: operator += (const char * pStr)
+{
+    int pStr_size = sizeOf (pStr);
+    if (vLen + pStr_size > vSize) {
+
+        vSize = vLen + pStr_size;
+        vSize = ((vSize / 10) + 1) * 10;
+        char * newPtr = (char *) malloc (sizeof (char) * vSize);
+
+        if (!newPtr) {
+
+            return (* this);
+        }
+        for (int i = 0; i <= vLen; ++i) {
+
+            newPtr [i] = vArr [i];
+        }
+        free (vArr);
+        vArr = newPtr;
+    }
+    for (int i = 0; i < pStr_size; ++i) {
+
+        vArr [vLen + i] = pStr [i];
+    }
+    vLen += (pStr_size - 1);
+    return (* this);
+}
+
 void string :: Display ()
 {
-    printf("%s", vArr);
+    printf("%s\n", vArr);
 }
 
 string :: ~string ()
@@ -186,7 +385,7 @@ int string :: ToInt ()
     return number;
 }
 
-int string :: Compare (const string & pStr)
+int string :: Compare (const char * pStr)
 {
 	if ((* this) > pStr) {
 		
