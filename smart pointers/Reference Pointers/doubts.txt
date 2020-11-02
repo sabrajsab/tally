@@ -1,0 +1,18 @@
+
+
+adfadfS
+
+ a_obj ( ptr1 )
+ 
+ 
+ a_obj ++;
+ 
+ 
+
+
+
+b_obj =    (vpt) (a_obj += 5)
+
+b_obt.orig_ptr 
+
+~b_obj
