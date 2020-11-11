@@ -62,7 +62,7 @@ class RefPtr {
 
     RefPtr <T> operator ++  (int)
     {
-        T * temp = vPtr;
+        RefPtr <T> temp (*;
         vPtr++;
         return temp;
     }
