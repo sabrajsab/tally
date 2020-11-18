@@ -1,0 +1,3 @@
+ascending order of address
+
+stack(decreasing) -> bss -> initialised read write area -> initialised read only area -> heap(increasing)

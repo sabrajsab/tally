@@ -1,0 +1,11 @@
+Q. Find out differences between C/C++ stdlib functions, Windows APIs for File i/o functions: Speed, functionality, control etc..​
+
+advantages of using Win32 API functions over the C++ stream functions :
+1. Speed
+2. Ability to use overlapped I/O to handle multiple operations at once without threads (and the complexity of synchronization)
+3. More specific error codes
+
+disadvantages :
+1. c++ stream funtions use os specific apis for file operations, so code using windows api cant be executed in different os
+2. stream functions are abstracted out to work in every os.
+3. portability

@@ -1,0 +1,13 @@
+Q.What happens when, during a system call, a timer interrupt occurs?
+
+A. The timer interrupt handler invokes the process scheduler as any code in a monolithic kernel invokes any other code: By direct function invocation.
+   The timer interrupt handler and the process scheduler's main entry point are both in the kernel's address space and in the same object file.
+   Kernel code can thus call or jump from the timer interrupt handler to the process scheduler just as function foo() may call function bar().
+
+   (That's the generic answer. Specific operating systems differ, of course. On Linux, the timer interrupt sets a flag, and the kernel then invokes 
+   the scheduler later, when about to return to process context. But the point remains: There's nothing magical about how this works.)
+
+   The system knows where and how to invoke the timer interrupt handler because the kernel tells it. How this is done varies from system to system,
+   but generally the kernel writes the memory address of the function that represents its timer interrupt handler into a register or memory I/O region
+   on the interrupt controller. When the processor is interrupted by an interrupt, it then halts the execution of the current context, saves it registers,
+   and jumps to the previously-registered interrupt handler for that interrupt line.

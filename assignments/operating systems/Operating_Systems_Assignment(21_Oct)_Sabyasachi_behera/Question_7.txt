@@ -1,0 +1,4 @@
+Q.7 What happens when you’re handling one interrupt and another one happens?
+
+A. When a new interrupt occurs while handling an interrupt, the priority of the new interrupt and the current interrupt are compared. 
+   If the new interrupt is of higher priority, its ISR (Interrupt Service Routine) is executed, else the processor continues executing the current interrupt’s ISR.

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <ctime>
+
 struct tBinaryTreeNode {
     tBinaryTreeNode(int pData)
     {
@@ -51,8 +53,8 @@ void PreOrder (tBinaryTreeNode * pRoot)
 {
     if (pRoot){
 
+        PreOrder (pRoot -> uLeft);
         printf("%d  ", pRoot -> uData);
-		PreOrder (pRoot -> uLeft);
         PreOrder (pRoot -> uRight);
     }
 }
@@ -60,12 +62,12 @@ void InOrder (tBinaryTreeNode * pRoot)
 {
 	if (pRoot){
 
-        InOrder (pRoot -> uLeft);
 		printf("%d  ", pRoot -> uData);
+        InOrder (pRoot -> uLeft);
         InOrder (pRoot -> uRight);
     }
 }
-tBinaryTreeNode * BSTSearchRecursive (tBinaryTreeNode * pRoot, int pVal)
+tBinaryTreeNode * Search (tBinaryTreeNode * pRoot, int pVal)
 {
     if (pRoot == nullptr) {
 
@@ -76,16 +78,16 @@ tBinaryTreeNode * BSTSearchRecursive (tBinaryTreeNode * pRoot, int pVal)
         return pRoot;
     } else if (pRoot -> uData > pVal) {
 
-        return BSTSearchRecursive (pRoot -> uLeft, pVal);
+        return Search (pRoot -> uLeft, pVal);
     } else {
 
-        return BSTSearchRecursive (pRoot -> uRight, pVal);
+        return Search (pRoot -> uRight, pVal);
     }
     return nullptr;
 }
 tBinaryTreeNode* BSTFindMinOfRightTreeIterative(int pVal)
 {	
-	tBinaryTreeNode* temp_node = BSTSearchRecursive (vBSTRoot, pVal);
+	tBinaryTreeNode* temp_node = Search (vBSTRoot, pVal);
 	if (!temp_node) {
 		
 		return temp_node;
@@ -143,15 +145,15 @@ void TestMyTrees()
     }
 	//PreOrder (vBSTRoot);
 	InOrder  (vBSTRoot);
-	if (BSTSearchRecursive (vBSTRoot, 34)) {
+	if (Search (vBSTRoot, 34)) {
 
         printf("\nfound 34");
     }
-    if (BSTSearchRecursive (vBSTRoot, 5)) {
+    if (Search (vBSTRoot, 5)) {
 
         printf("\nfound 5");
     }
-    if (BSTSearchRecursive (vBSTRoot, 6)) {
+    if (Search (vBSTRoot, 6)) {
 
         printf("\nfound 6");
     }

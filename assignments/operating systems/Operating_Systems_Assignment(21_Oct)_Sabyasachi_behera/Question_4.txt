@@ -1,0 +1,4 @@
+Q.4 Does a 32-bit app run faster on 64-bit OS ?
+
+A. It will run slightly slower as it has to be run through WoW64 emulation. WoW64 (Windows 32-bit on Windows 64-bit) is a subsystem
+   of the Windows operating system capable of running 32-bit applications on 64-bit Windows.

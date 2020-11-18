@@ -1,0 +1,19 @@
+Summary
+
+chapter 1: this is just an introduction to the idea of low level programs, ones that recognise and interact with actual hardwares. This chapter 
+           gave an overview of things we will experience along the uncoming chapters that will give us better understanding on the tasks done by OS by 
+		   creating our own miniature OS
+		
+chapter 2: in this chapter we learnt about following concepts:
+		   1. Boot process : First BIOS is loaded from chip to memory and initialised, it does low level checkup of the hardware and memory, then it 
+		      boots the OS. For this BIOS has to know which instructions are for OS, so we have to make it know where OS routines are stored. We do this
+			  by storing the OS in the 1st sector of ont of the disks (i.e. Cylinder 0, Head 0, Sector 0)known as the boot sector, and making  the last
+			  two bytes of an intended boot sector set to the magic number 0xaa55.
+		   2. CPU Emulation : To write and test any custom OS, we can use the cpu, but it blindly fetches and executes instructions, even if the 
+		      fetched instruction is random bits. So it becomes dangerous eg. something goes wrong and the random bytes represent instruction to 
+			  erase hard disk. Virtualisation also uses host CPU to execute instructions, so not a good option. Here CPU emulation comes to play.  
+			  emulation involves a program that behaves like a specific CPU architecture, using variables to represent CPU registers and high-level
+			  control structures to simulate lower level jumps and so on, so is much slower but often better suited for development and debugging 
+			  such systems.
+		   3. The why and how of hexadecimal notations
+		   

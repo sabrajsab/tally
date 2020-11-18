@@ -1,0 +1,7 @@
+Q.5 How can the operating system regain control of the CPU so that it can switch between processes?
+
+A. The OS sets up a hardware timer (Programmable interval timer or PIT) that generates an interrupt every N milliseconds. 
+   That interrupt is delivered to the kernel and user-code is interrupted. It works like any other hardware interrupt. 
+   For example your disk will force a switch to the kernel when it has completed an IO. when programming for windows 98 in older systems,
+   programmers had to explicitly call yield() command. Otherwise, no other process could regain control over CPU ever again which would
+   finally crash the system
