@@ -38,14 +38,7 @@ int signal (tPrintInfo * tokenobj)
 DWORD WINAPI ThreadPrint (LPVOID pParam)
 {
 	tPrintInfo * tokenobj = (tPrintInfo *) pParam;
-	if(*(tokenobj -> uMax) < 2 && *(tokenobj -> uMax) > -2 && (tokenobj -> uSignature) == 2) {
-		
-		return 0;
-	}
-	if (*(tokenobj -> uMax) == 0) {
-		
-		return 0;
-	}
+	
 	while (true)  {
 	
 		if (wait(tokenobj) != 0) {
@@ -87,20 +80,19 @@ DWORD WINAPI ThreadPrint (LPVOID pParam)
 int main(int pArgc, char ** pArgv)
 {
 		tPrintInfo obj [3];
-		int printval = 0;
-		int token = 0;
-		int max;
-		HANDLE thread_handle [3];
-		bool b_wait_all = true;
-		int return_val_WaitForMultipleObjects;
-		int lastTurn = 0;
+		int        printval = 0;
+		int        token = 0;
+		int        max;
+		HANDLE     thread_handle [3];
+		bool       b_wait_all = true;
+		int        return_val_WaitForMultipleObjects;
+		int        lastTurn = 0;
 		
 	if (pArgc == 1) {
 		
 		max = 10;
 	} else {
 		
-		//printf ("*%d*", pArgv [1][1]);
 		if (!CheckInt (pArgv[1], max)) {
 
 			return 1;
@@ -111,6 +103,22 @@ int main(int pArgc, char ** pArgv)
 		printf ("input should be in range [-100, 184]\n");
 		return 1;
 	}
+	if (max == 0) {
+		
+		printf ("0 0");
+		return 0;
+	}
+	if (max == 1) {
+		
+		printf ("0 1");
+		return 0;
+	}
+	if (max == -1) {
+		
+		printf ("-1 0");
+		return 0;
+	}
+	
 	for (int i = 0; i < 3; ++i) {
 		
 		obj [i].uLastTurn      = &lastTurn;
