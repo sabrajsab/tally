@@ -100,9 +100,29 @@ class Queue {
 DWORD WINAPI ThreadFunc (LPVOID pParam)
 {
     tThreadParameter * param = (tThreadParameter *) pParam;
-    while (param->uChoice == 0) {}
-
-    param->uIsFree = false;
+    while (param->uChoice == 0);
+    switch (param->uChoice) {
+    case 1:
+        param->uObj->Enqueue(rand()%100);
+        param->uIsFree = true;
+        break;
+    case 2:
+        param->uObj->Dequeue();
+        param->uIsFree = true;
+        break;
+    case 3:
+        param->uObj->Display();
+        param->uIsFree = true;
+        break;
+    case 4:
+        param->uObj->DeleteQueue();
+        param->uIsFree = true;
+        break;
+    case 5:
+        param->uObj->NoOfNodes();
+        param->uIsFree = true;
+        break;
+    }
 }
 
 int main ()
@@ -110,7 +130,6 @@ int main ()
         Queue root;
         HANDLE threadhandle[45];
         int choice;
-        int j = 0;
 
     for (int i = 0; i < 8; i++) {
 
@@ -130,83 +149,95 @@ int main ()
     scanf ("%d", &choice);
     */
 
-    while (j < 100) {
-        int i = 0;
+    for (int j = 0; j < 100; ++j) {
+        
         choice = (Rand() % 8) + 1;
-        bool cancreate = false;
-        bool selected = false;
-        int k;
-        int s = -1;
+            int first_free_thread = -1;
+            int first_nothread = -1;
+            int no_of_free_threads = 0;
+            int no_of_working_threads = 0;
 
-        // 1. search for free thread
-        for (; i < 45; i++) {
+        for (int i = 0; i < 45; i++) {
 
-            if (gParamArray[i].uIsFree == true && gParamArray[i].uIsCreated == true && selected == false) {
+            if (gParamArray[i].uIsFree == true && gParamArray[i].uIsCreated == true) {
 
-                selected = true;
-                s = i;
-            } else if (gParamArray[i].uIsCreated == false && cancreate == false) {
-
-                cancreate = true;
-                k = i;
+                first_free_thread = i;
+                break;
             }
         }
-
-        // 2. if no free thread, create new
-        if (cancreate == true && s == -1) {
-
-            gParamArray[k].uIsCreated = true;
-            gParamArray[k].uObj = &root;
-            threadhandle[k] = CreateThread (NULL, 0, ThreadFunc, &gParamArray[k], NULL, NULL);
-            s = k;
-            if (choice == 6) {
-
-                continue;
-            }
-        }
-
-        // 3. if max number of threads reached, wait for a thread to be free, or user will kill a thread
-        if (cancreate == false && s == -1) {
-
-            continue;
-        }
+        
 
         switch (choice) {
             case 1:
-                gParamArray[s].uChoice = 1;
-                gParamArray[s].uIsFree = false;
-                break;
             case 2:
-                gParamArray[s].uChoice = 2;
-                gParamArray[s].uIsFree = false;
-                break;
             case 3:
-                gParamArray[s].uChoice = 3;
-                gParamArray[s].uIsFree = false;
-                break;
             case 4:
-                gParamArray[s].uChoice = 4;
-                gParamArray[s].uIsFree = false;
-                break;
             case 5:
-                gParamArray[s].uChoice = 5;
-                gParamArray[s].uIsFree = false;
+                if (first_free_thread == -1) {
+
+                    printf ("\nno free threads !");
+                    break;
+                }
+                gParamArray[first_free_thread].uChoice = choice;
+                gParamArray[first_free_thread].uIsFree = false;
                 break;
             case 6:
-                
+                for (int i = 0; i < 45; i++) {
+                    if (gParamArray[i].uIsCreated == false) {
+
+                        first_nothread = i;
+                        break;
+                    }
+                }
+                gParamArray [first_nothread].uIsCreated = true;
+                gParamArray [first_nothread].uObj = &root;
+                threadhandle [k] = CreateThread (NULL, 0, ThreadFunc, &gParamArray[first_nothread], NULL, NULL);
                 break;
             case 7:
-                // kill thread
+                if (first_free_thread == -1) {
+
+                    printf ("\nno free threads !");
+                    break;
+                }
+                if(TerminateThread(threadhandle[first_free_thread], 1)) {
+
+                    gParamArray[first_free_thread].uIsCreated = false;
+                }
+
                 break;
             case 8:
-                // pool info
+                for (int i = 0; i < 45; i++) {
+
+                    if (gParamArray[i].uIsCreated == true) {
+
+                        if (gParamArray[i].uIsFree == true) {
+
+                            no_of_free_threads++;
+                        } else {
+
+                            no_of_working_threads++;
+                        }
+                    }
+                }
+                printf("\nTotal no. of threads : %d, No. of free threads : %d", no_of_free_threads + no_of_working_threads, no_of_free_threads);
                 break;
             case 9:
                 // exit, for synchronous
             default:
                 printf ("wrong choice, enter again\n"); // for synchronous
         }
-        j++;
+    }
+
+    for (int i = 0; i < 45; ++i) {
+
+        if (gParamArray[i].uIsCreated == true) {
+
+            while (!gParamArray[i].uIsFree);
+        }
+        if(TerminateThread(threadhandle[first_free_thread], 1)) {
+
+            gParamArray[first_free_thread].uIsCreated = false;
+        }
     }
 
     /*
