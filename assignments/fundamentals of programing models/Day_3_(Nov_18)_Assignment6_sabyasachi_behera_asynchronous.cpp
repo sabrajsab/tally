@@ -107,7 +107,6 @@ DWORD WINAPI ThreadFunc (LPVOID pParam)
     tThreadParameter * param = (tThreadParameter *) pParam;
     while (true) {
         while (param->uChoice == 0);
-        while (WaitForSingleObject (gLock, INFINITE) != WAIT_OBJECT_0);
         switch (param->uChoice) {
         case 1:
             param->uObj->Enqueue(rand()%100);
@@ -125,13 +124,10 @@ DWORD WINAPI ThreadFunc (LPVOID pParam)
             printf ("\nNo. of threads : %d", param->uObj->NoOfNodes());
             break;
         }
-        if (!ReleaseMutex (gLock)) {
-
-            printf ("error code: %d\n", GetLastError ());
-        }
         param->uChoice = 0;
         param->uIsFree = true;
     }
+    return 0;
 }
 
 int main ()
@@ -140,11 +136,6 @@ int main ()
         HANDLE threadhandle[45];
         int choice;
 
-    if ((gLock = CreateMutex(NULL, false, NULL)) == NULL) {
-
-        printf ("error code: %d\n", GetLastError ());
-        return 1;
-    }
     for (int i = 0; i < 8; i++) {
 
         if (gParamArray[i].uIsCreated == false) {
@@ -251,6 +242,5 @@ int main ()
             }
         }
     }
-    CloseHandle(gLock);
     return 0;
 }

@@ -1,93 +1,7 @@
 #include <stdio.h>
 #include <windows.h>
-
-HANDLE gLock;
-
-struct tNode {
-    int     uData;
-    tNode * uNext;
-};
-
-class Queue {
-  public:
-    Queue ()
-    {
-        vHead = nullptr;
-        vTail = nullptr;
-        vLength = 0;
-    }
-    bool Enqueue (int pValue)
-    {
-        printf("Enqueing %d", pValue);
-        tNode * newnode = (tNode *) malloc (sizeof (tNode));
-        if (newnode == nullptr) {
-
-            return false;
-        }
-        newnode->uData = pValue;
-        newnode->uNext = nullptr;
-
-        if (vHead == nullptr && vTail == nullptr) {
-
-            vHead = vTail = newnode;
-            vLength++;
-            return true;
-        }
-        vTail->uNext = newnode;
-        vTail = newnode;
-        vLength++;
-        return true;
-    }
-    bool Dequeue ()
-    {
-        if (vHead == nullptr) {
-
-            printf ("\nqueue empty in dequeue\n");
-            return false;
-        }
-        tNode * newnode = nullptr;
-        newnode = vHead;
-        if (vHead == vTail) {
-
-            vTail = nullptr;
-        }
-        vHead = vHead->uNext;
-        printf ("\ndequeue happened, %d removed\n", newnode->uData);
-        vLength--;
-        free (newnode);
-        return true;
-    }
-    void Display ()
-    {
-        printf("\nDisplaying all elemnts of queue: ");
-        if (vHead == nullptr) {
-
-            printf ("\nqueue empty in display\n");
-            return;
-        }
-        tNode * temp = nullptr;
-        temp = vHead;
-        while (temp != nullptr) {
-
-            printf ("%d ", temp->uData);
-            temp = temp->uNext;
-        }
-        printf ("\n");
-    }
-    void DeleteQueue ()
-    {
-        printf ("\ndeletequeue");
-        while (Dequeue());
-    }
-    int NoOfNodes ()
-    {
-        return vLength;
-    }
-  private:
-    tNode * vHead;
-    tNode * vTail;
-    int     vLength;
-};
+#include "readwritelock.hpp"
+#include "queue.hpp"
 
 struct tThreadParameter {
     tThreadParameter ()
@@ -95,23 +9,27 @@ struct tThreadParameter {
         uChoice = 0;
         uIsCreated = false;
         uIsFree = true;
+        uObj = nullptr;
     }
-    int uChoice;
+    volatile int uChoice;
     Queue * uObj;
-    bool uIsFree;
-    bool uIsCreated;
+    volatile bool uIsFree;
+    volatile bool uIsCreated;
 } gParamArray[45];
 
 
 DWORD WINAPI ThreadFunc (LPVOID pParam)
 {
-
     tThreadParameter * param = (tThreadParameter *) pParam;
     while (true) {
-        while (param->uChoice == 0);
-        
-        //while (WaitForSingleObject (gLock, INFINITE) != WAIT_OBJECT_0);
-        printf ("\nchoice: %d", param->uChoice);
+
+        while (param->uChoice == 0) {
+
+            if (!param->uIsCreated) {
+
+                return 0;
+            }
+        }
         switch (param->uChoice) {
         case 1:
             param->uObj->Enqueue(rand()%100);
@@ -129,12 +47,6 @@ DWORD WINAPI ThreadFunc (LPVOID pParam)
             printf ("\nNo. of nodes : %d", param->uObj->NoOfNodes());
             break;
         }
-        
-        /*if (!ReleaseMutex (gLock)) {
-
-            printf ("error code: %d\n", GetLastError ());
-        }*/
-        
         param->uChoice = 0;
         param->uIsFree = true;
     }
@@ -144,13 +56,7 @@ int main ()
 {
         Queue root;
         HANDLE threadhandle[45];
-        int choice;
-
-    if ((gLock = CreateMutex(NULL, false, NULL)) == NULL) {
-
-        printf ("error code: %d\n", GetLastError ());
-        return 1;
-    }
+        volatile int choice;
     for (int i = 0; i < 8; i++) {
 
         if (gParamArray[i].uIsCreated == false) {
@@ -164,6 +70,7 @@ int main ()
     printf ("1. Enqueue, 2. Dequeue, 3. Display all queue, 4. Empty whole queue, 5. show no. of nodes in queue\n\
                 6. create new thread, 7. Delete a thread, 8. show threa pool, 9. exit");
     for (int j = 0; j < 100; ++j) {
+
 
         choice = (rand() % 8) + 1;
         //scanf ("%d", &choice);
@@ -193,8 +100,8 @@ int main ()
                     printf ("\nno free threads for choice : %d!", choice);
                     break;
                 }
-                gParamArray[first_free_thread].uChoice = choice;
                 gParamArray[first_free_thread].uIsFree = false;
+                gParamArray[first_free_thread].uChoice = choice;
                 while (gParamArray[first_free_thread].uChoice != 0);
 
                 break;
@@ -215,7 +122,6 @@ int main ()
                 gParamArray [first_nothread].uIsCreated = true;
                 gParamArray [first_nothread].uObj = &root;
                 threadhandle [first_nothread] = CreateThread (NULL, 0, ThreadFunc, &gParamArray[first_nothread], NULL, NULL);
-                //printf ("*%d*", first_nothread);
                 break;
             case 7:
                 if (first_free_thread == -1) {
@@ -223,13 +129,14 @@ int main ()
                     printf ("\nno free threads to delete!");
                     break;
                 }
-                if(TerminateThread(threadhandle[first_free_thread], 1)) {
 
-                    printf("\nDeleting thread : %d", first_free_thread);
-                    CloseHandle(threadhandle[first_free_thread]);
-                    gParamArray[first_free_thread].uIsCreated = false;
+                printf("\nDeleting thread : %d", first_free_thread);
+                gParamArray[first_free_thread].uIsCreated = false;
+                if (WaitForSingleObject(threadhandle[first_free_thread], INFINITE) != WAIT_OBJECT_0) {
+
+                    printf ("error code: %d\n", GetLastError ());
                 }
-
+                CloseHandle(threadhandle[first_free_thread]);
                 break;
             case 8:
                 for (int i = 0; i < 45; i++) {
@@ -254,35 +161,32 @@ int main ()
 
                         while (!gParamArray[i].uIsFree);
                         
-                        if (TerminateThread (threadhandle[i], 1)) {
+                        
+                        gParamArray[i].uIsCreated = false;
+                        if (WaitForSingleObject (threadhandle[i], INFINITE) != WAIT_OBJECT_0) {
 
-                            CloseHandle(threadhandle[i]);
-                            gParamArray[i].uIsCreated = false;
+                            printf ("error code: %d\n", GetLastError ());
                         }
+                        CloseHandle(threadhandle[i]);
                     }
                 }
-                CloseHandle (gLock);
-                printf("\nabout to exit 1");
                 return 0;
         }
     }
-    //printf("\nabout to exit 2");
     for (int i = 0; i < 45; ++i) {
 
         if (gParamArray[i].uIsCreated == true) {
 
-            //printf ("#%d#", i);
             while (!gParamArray[i].uIsFree);
-            //printf ("#%d#", i);
-            if (TerminateThread (threadhandle[i], 1)) {
+            
+            
+            gParamArray[i].uIsCreated = false;
+            if (WaitForSingleObject (threadhandle[i], INFINITE) != WAIT_OBJECT_0) {
 
-                printf ("%d", i);
-                CloseHandle (threadhandle[i]);
-                gParamArray[i].uIsCreated = false;
+                printf ("error code: %d\n", GetLastError ());
             }
+            CloseHandle(threadhandle[i]);
         }
     }
-    CloseHandle (gLock);
-    printf("\nabout to exit 2");
     return 0;
 }
