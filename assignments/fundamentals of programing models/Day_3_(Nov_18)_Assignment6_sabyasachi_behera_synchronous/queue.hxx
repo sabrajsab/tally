@@ -13,7 +13,7 @@ bool Queue :: Enqueue (int pValue)
 {
     WriteLock wl;
     wl.Wait();
-    printf("Enqueing %d", pValue);
+    printf("\nEnqueing %d\n", pValue);
     tNode * newnode = (tNode *) malloc (sizeof (tNode));
     if (newnode == nullptr) {
 
