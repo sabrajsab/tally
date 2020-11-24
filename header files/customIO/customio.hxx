@@ -97,6 +97,11 @@ int scanInt (int repeat)
         int          digits        = 0;
         static   int maxNoOfDigits = 8;
 
+	if (c == '\n') {
+		
+		printf ("\nTaking default value : 10\n");
+		return 10;
+	}
     if (c == '-') {
 
         neg = -1;
@@ -133,6 +138,56 @@ int scanInt (int repeat)
     return val * neg;
 }
 
+bool CheckInt (char * pStr, int & pVal)
+{
+        int          neg           = 1;
+        int          val           = 0;
+        bool         isNotInt      = false;
+		int 		 index		   = 0;
+        register int c             = pStr [index ++];
+        int          digits        = 0;
+        static   int maxNoOfDigits = 8;
+
+    if (c == '-') {
+
+        neg = -1;
+        c = pStr [index ++];
+    } else if (c == '+') {
+		
+		c = pStr [index ++];
+	}
+    do {
+
+        if (c < '0' || c > '9') {
+
+            isNotInt = true;
+            break;
+        }
+        digits++;
+        val *= 10;
+        val += (c - '0');
+    } while ((c = pStr [index ++]) != '\n' && c != ' ' && c != '\0');
+
+    if (isNotInt) {
+
+        while ((pStr [index ++]) != '\n');
+        printf("Please enter integer value\n");
+        return false;
+    }
+
+    if (digits >= maxNoOfDigits) {
+        if (c == ' ') {
+
+            while ((pStr [index ++]) != '\n');
+        }
+        printf("No. of Digits exceeded maximum.\n");
+        return false;
+    }
+
+    pVal = val * neg;
+	return true;
+}
+
 char * scanString ()
 {
         char   ch;
@@ -152,7 +207,7 @@ char * scanString ()
         size += 10;
         for (int i = 10; i >= 0; --i) {
 
-            if ((ch = getchar()) == '\n') {
+            if ((ch = getchar ()) == '\n') {
 
                 str[size - i]='\0';
                 return str;
