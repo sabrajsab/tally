@@ -1,7 +1,13 @@
 #ifndef REF_PTR_HPP
 #define REF_PTR_HPP
 
-#include <new>
+#include <new> //demo comment
+
+void fun_not_used()
+{
+    printf("hello");
+}
+
 template <typename T>
 class RefPtr {
   public:
@@ -151,3 +157,4 @@ class RefPtr {
 };
 
 #endif
+
