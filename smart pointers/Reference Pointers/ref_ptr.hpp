@@ -6,6 +6,7 @@
 void fun_not_used()
 {
     printf("hello");
+    printf("hi");
 }
 
 template <typename T>
