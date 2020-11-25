@@ -2,6 +2,12 @@ read coding guidelines before friday
 
 watch time difference for multithreaded disk io
 
+Assignments review (1 or 2)
+What is NFR?
+What are different NFR parameters?
+Explain each NFR parameter with in-depth understanding
+Why NFRs are so important?
+Note: <prepare PPT>
 
 
 
